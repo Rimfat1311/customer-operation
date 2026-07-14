@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply h-full bg-brand-bg text-slate-800 antialiased selection:bg-brand-primary/20;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Floating labels custom styling integration */
+.float-label-input:placeholder-shown ~ .float-label {
+  @apply top-1/2 -translate-y-1/2 text-sm text-slate-400 pl-10;
+}
+
+.float-label-input:focus ~ .float-label,
+.float-label-input:not(:placeholder-shown) ~ .float-label {
+  @apply top-2 scale-75 -translate-y-0 text-brand-primary pl-10;
+}
+
+.float-label-input {
+  @apply pt-5 pb-1;
+}
+
+/* Custom Ripple Effect */
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-span {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  background-color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
