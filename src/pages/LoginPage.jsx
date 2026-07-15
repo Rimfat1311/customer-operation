@@ -84,7 +84,7 @@ export default function LoginPage() {
     }, 1500);
   };
 
-  const handleSocialLogin = (provider) => {
+  const handleSocialLogin = (_provider) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -108,7 +108,7 @@ export default function LoginPage() {
               <path d="M8 16L13 21L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="font-bold text-xl tracking-tight">AuthFlow</span>
+          <span className="font-bold text-xl tracking-tight">LAP Contact Center</span>
         </div>
 
         {/* Core Welcoming Messages */}
@@ -178,7 +178,7 @@ export default function LoginPage() {
                 <path d="M8 16L13 21L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="font-bold text-lg tracking-tight text-slate-800">AuthFlow</span>
+            <span className="font-bold text-lg tracking-tight text-slate-800">LAP Contact Center</span>
           </div>
 
           <div className="mb-8">

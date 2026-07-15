@@ -2,7 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-import DashboardPage from './pages/DashboardPage';
+import DashboardLayout from './pages/DashboardLayout';
+import SearchCustomersPage from './pages/SearchCustomersPage';
+import TakeQuestionsPage from './pages/TakeQuestionsPage';
+import QuizResultsPage from './pages/QuizResultsPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 function App() {
   return (
@@ -10,7 +14,15 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Navigate to="/dashboard/search-customers" replace />} />
+          <Route path="search-customers" element={<SearchCustomersPage />} />
+          <Route path="take-questions" element={<TakeQuestionsPage />} />
+          <Route path="quiz-results" element={<QuizResultsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+        </Route>
+        
         {/* Redirect any other unknown routes to login page */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -19,3 +31,4 @@ function App() {
 }
 
 export default App;
+
