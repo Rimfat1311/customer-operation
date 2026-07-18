@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, User, Mail, Phone, MapPin, Building, ShieldAlert, Loader2, CheckCircle } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Building, ShieldAlert, CheckCircle } from 'lucide-react';
+import SearchForm from '../components/organisms/SearchForm';
 
 const MOCK_CUSTOMERS = {
   '470011': {
@@ -73,57 +74,18 @@ export default function SearchCustomersPage() {
       </div>
 
       {/* Search Input Card */}
-      <div className="bg-white border border-slate-100 p-6 rounded-brand shadow-sm">
-        <form onSubmit={handleSearch} className="space-y-4 max-w-xl">
-          <div>
-            <label htmlFor="soldToId" className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-              SAP Sold To ID (6 Digits)
-            </label>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  id="soldToId"
-                  type="text"
-                  pattern="\d{6}"
-                  maxLength={6}
-                  placeholder="e.g. 470011"
-                  value={soldToId}
-                  onChange={(e) => setSoldToId(e.target.value.replace(/\D/g, ''))}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-brand text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-6 py-3 bg-brand-primary text-white font-semibold rounded-brand hover:bg-blue-700 transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-70 disabled:hover:bg-brand-primary"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Searching...</span>
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-4 h-4" />
-                    <span>Search</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1.5 font-light">
-              Try searching "470011", "123456", or "789012" to see mock customer details.
-            </p>
-          </div>
-        </form>
-      </div>
+      <SearchForm
+        soldToId={soldToId}
+        onSoldToIdChange={setSoldToId}
+        isLoading={isLoading}
+        onSubmit={handleSearch}
+      />
 
       {/* Search Results */}
       {searched && (
         <div className="animate-slide-up [animation-delay:50ms]">
           {customer ? (
-            <div className="bg-white border border-slate-100 rounded-brand shadow-sm overflow-hidden">
+            <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-100 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center">
@@ -135,7 +97,7 @@ export default function SearchCustomersPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider bg-blue-50 text-brand-primary">
+                  <span className="text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider bg-brand-primary-light text-brand-primary">
                     {customer.tier}
                   </span>
                   <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider flex items-center ${
@@ -156,7 +118,7 @@ export default function SearchCustomersPage() {
               <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Contact Information */}
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Contact Information</h4>
+                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Contact Information</h4>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 text-xs sm:text-sm text-slate-600">
                       <User className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -179,8 +141,8 @@ export default function SearchCustomersPage() {
 
                 {/* Account Details */}
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Financial Status</h4>
-                  <div className="bg-slate-50 rounded-brand p-4 space-y-3.5 border border-slate-100">
+                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Financial Status</h4>
+                  <div className="bg-slate-50 rounded-xl p-4 space-y-3.5 border border-slate-100">
                     <div className="flex justify-between items-center text-xs sm:text-sm">
                       <span className="text-slate-500 font-medium">Credit Limit:</span>
                       <span className="font-semibold text-slate-800">{customer.creditLimit}</span>
@@ -200,7 +162,7 @@ export default function SearchCustomersPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white border border-slate-100 p-8 rounded-brand shadow-sm flex flex-col items-center text-center">
+            <div className="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center mb-3">
                 <ShieldAlert className="w-6 h-6" />
               </div>

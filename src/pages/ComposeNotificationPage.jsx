@@ -93,7 +93,7 @@ function FormLabel({ children }) {
 }
 
 /* ─────────────────────────── Main Page ─────────────────────────── */
-export default function NotificationsPage() {
+export default function ComposeNotificationPage() {
   const [notifType, setNotifType]   = useState('general');
   const [targetRole, setTargetRole] = useState('Driver');
   const [region, setRegion]         = useState('All');
@@ -156,7 +156,7 @@ export default function NotificationsPage() {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <div className="w-9 h-9 rounded-xl bg-brand-primary flex items-center justify-center shadow-sm">
-              <Bell className="w-4.5 h-4.5 text-white w-5 h-5" />
+              <Megaphone className="w-4.5 h-4.5 text-white w-5 h-5" />
             </div>
             <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Compose Notification</h2>
           </div>

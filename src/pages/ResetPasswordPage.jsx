@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowLeft, Loader2, RefreshCw } from 'lucide-react';
-
+import { Mail, ArrowLeft, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
+import { authService } from '../services/authService';
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -9,13 +9,14 @@ export default function ResetPasswordPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [ripples, setRipples] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
+  const [apiError, setApiError] = useState('');
 
   const handleRipple = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
     const x = e.clientX - rect.left - size / 2;
     const y = e.clientY - rect.top - size / 2;
-    
+
     const newRipple = {
       id: Date.now(),
       style: {
@@ -25,7 +26,7 @@ export default function ResetPasswordPage() {
         top: y,
       }
     };
-    
+
     setRipples((prev) => [...prev, newRipple]);
     setTimeout(() => {
       setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
@@ -45,27 +46,39 @@ export default function ResetPasswordPage() {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     handleRipple(e);
 
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setTimeout(() => {
+    setApiError('');
+
+    try {
+      await authService.requestPasswordReset(email);
       setIsLoading(false);
       setIsSuccess(true);
-    }, 1500);
+    } catch (err) {
+      setIsLoading(false);
+      setApiError(err.message || 'Failed to send reset link. Please try again.');
+    }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     setIsLoading(true);
     setToastMessage('');
-    setTimeout(() => {
+    setApiError('');
+
+    try {
+      await authService.resendPasswordReset(email);
       setIsLoading(false);
       setToastMessage('Reset link resent successfully!');
       setTimeout(() => setToastMessage(''), 3000);
-    }, 1200);
+    } catch (err) {
+      setIsLoading(false);
+      setApiError(err.message || 'Failed to resend link.');
+    }
   };
 
   return (
@@ -83,7 +96,7 @@ export default function ResetPasswordPage() {
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/5 rounded-full filter blur-3xl" />
 
       <div className="w-full max-w-md bg-white border border-slate-100 p-8 rounded-brand shadow-sm hover:shadow-md transition-shadow duration-300 animate-slide-up relative z-10">
-        
+
         {/* Step 1: Request Reset Form */}
         {!isSuccess ? (
           <div className="flex flex-col items-center">
@@ -106,6 +119,13 @@ export default function ResetPasswordPage() {
               </p>
             </div>
 
+            {apiError && (
+              <div className="w-full mb-6 p-3 bg-brand-danger/10 border border-brand-danger/20 rounded-xl flex items-start space-x-3 text-brand-danger animate-fade-in">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p className="text-sm font-medium text-left">{apiError}</p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="w-full space-y-6">
               {/* Email Address */}
               <div className="relative">
@@ -115,11 +135,10 @@ export default function ResetPasswordPage() {
                 <input
                   type="email"
                   id="email"
-                  className={`w-full pl-11 pr-4 py-3 bg-slate-50 border rounded-brand text-slate-800 text-sm focus:bg-white focus:outline-none transition-all duration-200 float-label-input ${
-                    emailError 
-                      ? 'border-brand-danger focus:border-brand-danger focus:ring-1 focus:ring-brand-danger' 
-                      : 'border-slate-200 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary'
-                  }`}
+                  className={`w-full pl-11 pr-4 py-3 bg-slate-50 border rounded-brand text-slate-800 text-sm focus:bg-white focus:outline-none transition-all duration-200 float-label-input ${emailError
+                    ? 'border-brand-danger focus:border-brand-danger focus:ring-1 focus:ring-brand-danger'
+                    : 'border-slate-200 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary'
+                    }`}
                   placeholder=" "
                   value={email}
                   onChange={(e) => {
@@ -144,7 +163,7 @@ export default function ResetPasswordPage() {
                 type="submit"
                 onClick={handleRipple}
                 disabled={isLoading}
-                className="w-full relative py-3 bg-brand-primary hover:bg-blue-700 text-white rounded-brand font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 flex items-center justify-center shadow-sm active:translate-y-[1px] disabled:opacity-75 disabled:pointer-events-none ripple-btn"
+                className="w-full relative py-3 bg-brand-primary hover:bg-brand-primary-dark text-white rounded-brand font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 flex items-center justify-center shadow-sm active:translate-y-[1px] disabled:opacity-75 disabled:pointer-events-none ripple-btn"
               >
                 {ripples.map((ripple) => (
                   <span
@@ -165,8 +184,8 @@ export default function ResetPasswordPage() {
               </button>
             </form>
 
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="mt-6 flex items-center space-x-2 text-xs sm:text-sm text-slate-500 hover:text-slate-800 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -195,6 +214,13 @@ export default function ResetPasswordPage() {
             <p className="text-slate-400 text-xs max-w-xs mb-6">
               Didn't receive the email? Check your spam folder, or click the button below to resend.
             </p>
+
+            {apiError && (
+              <div className="w-full mb-6 p-3 bg-brand-danger/10 border border-brand-danger/20 rounded-xl flex items-start space-x-3 text-brand-danger animate-fade-in">
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <p className="text-sm font-medium text-left">{apiError}</p>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="w-full space-y-3">

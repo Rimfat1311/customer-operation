@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, CheckCircle, TrendingUp, Calendar } from 'lucide-react';
+import { Award, BookOpen, Clock, CheckCircle, TrendingUp, HelpCircle, Calendar } from 'lucide-react';
 
 const RECENT_QUIZZES = [
   {
@@ -57,7 +57,7 @@ export default function QuizResultsPage() {
         <div className="bg-white border border-slate-100 p-4 rounded-brand shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-slate-500 font-medium">Quizzes Attempted</span>
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-brand-primary font-bold flex items-center">
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-primary-light text-brand-primary font-bold flex items-center">
               <TrendingUp className="w-3 h-3 mr-0.5" />
               +2
             </span>
@@ -175,7 +175,7 @@ export default function QuizResultsPage() {
                   cy="50" 
                   r="40" 
                   fill="transparent" 
-                  stroke="#2563EB" 
+                  stroke="#DC0A12" 
                   strokeWidth="8" 
                   strokeDasharray="251.2" 
                   strokeDashoffset="40.2" // 84% score
@@ -229,7 +229,7 @@ export default function QuizResultsPage() {
                 <span className="text-[9px] font-semibold text-slate-400">W</span>
               </div>
               <div className="flex flex-col items-center space-y-1 w-full">
-                <div className="w-2.5 bg-brand-primary hover:bg-blue-700 rounded-t transition-all cursor-pointer" style={{ height: '90px' }} title="Thursday: 5 hours" />
+                <div className="w-2.5 bg-brand-primary hover:bg-brand-primary-dark rounded-t transition-all cursor-pointer" style={{ height: '90px' }} title="Thursday: 5 hours" />
                 <span className="text-[9px] font-semibold text-brand-primary font-bold">T</span>
               </div>
               <div className="flex flex-col items-center space-y-1 w-full">

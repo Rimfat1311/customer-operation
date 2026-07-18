@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Send, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
+import { MessageSquare, User, AlertCircle, Clock, Check, Send, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 
 const INITIAL_QUESTIONS = [
   {
@@ -91,7 +91,7 @@ export default function TakeQuestionsPage() {
           <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">Take Questions</h2>
           <p className="text-slate-400 text-xs sm:text-sm mt-0.5">Answer incoming support tickets and client inquiries in real time.</p>
         </div>
-        <div className="bg-blue-50 text-brand-primary text-xs px-3 py-1 rounded-full font-bold">
+        <div className="bg-brand-primary-light text-brand-primary text-xs px-3 py-1 rounded-full font-bold">
           {questions.length} Active Tickets
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function TakeQuestionsPage() {
                     setReplyText('');
                   }}
                   className={`w-full p-4 text-left transition-all flex items-start space-x-3.5 hover:bg-slate-50 ${
-                    activeQuestionId === q.id ? 'bg-blue-50/30 border-l-4 border-brand-primary' : ''
+                    activeQuestionId === q.id ? 'bg-brand-primary-light/30 border-l-4 border-brand-primary' : ''
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold ${
@@ -131,7 +131,7 @@ export default function TakeQuestionsPage() {
                     <div className="flex items-center space-x-2 mt-2">
                       <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
                         q.priority === 'critical' ? 'bg-rose-100 text-rose-800' :
-                        q.priority === 'high' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'
+                        q.priority === 'high' ? 'bg-amber-100 text-amber-800' : 'bg-brand-secondary/15 text-slate-700'
                       }`}>
                         {q.priority}
                       </span>
@@ -202,7 +202,7 @@ export default function TakeQuestionsPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting || !replyText.trim()}
-                      className="px-5 py-2.5 bg-brand-primary text-white font-semibold rounded-brand hover:bg-blue-700 transition-all flex items-center justify-center space-x-2 text-xs sm:text-sm disabled:opacity-50 disabled:hover:bg-brand-primary"
+                      className="px-5 py-2.5 bg-brand-primary text-white font-semibold rounded-brand hover:bg-brand-primary-dark transition-all flex items-center justify-center space-x-2 text-xs sm:text-sm disabled:opacity-50 disabled:hover:bg-brand-primary"
                     >
                       {isSubmitting ? (
                         <>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Check, Users, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Check, Users, Loader2, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   
   // Form states
   const [email, setEmail] = useState('');
@@ -14,6 +16,7 @@ export default function LoginPage() {
   // Validation and UI states
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [apiError, setApiError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [ripples, setRipples] = useState([]);
 
@@ -69,27 +72,37 @@ export default function LoginPage() {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     handleRipple(e);
 
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setApiError('');
 
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      await login(email, password);
       setIsLoading(false);
       navigate('/dashboard');
-    }, 1500);
+    } catch (err) {
+      setIsLoading(false);
+      setApiError(err.message || 'Failed to login. Please try again.');
+    }
   };
 
-  const handleSocialLogin = (_provider) => {
+  const handleSocialLogin = async (provider) => {
     setIsLoading(true);
-    setTimeout(() => {
+    setApiError('');
+    
+    try {
+      await authService.socialLogin(provider);
       setIsLoading(false);
       navigate('/dashboard');
-    }, 1200);
+    } catch (err) {
+      setIsLoading(false);
+      setApiError(err.message || `Failed to login with ${provider}.`);
+    }
   };
 
   return (
@@ -185,6 +198,13 @@ export default function LoginPage() {
             <h2 className="text-2xl font-bold text-slate-900">Welcome Back</h2>
             <p className="text-slate-500 text-sm mt-1">Sign in to continue to your workspace</p>
           </div>
+
+          {apiError && (
+            <div className="mb-6 p-3 bg-brand-danger/10 border border-brand-danger/20 rounded-xl flex items-start space-x-3 text-brand-danger animate-fade-in">
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">{apiError}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
@@ -292,7 +312,7 @@ export default function LoginPage() {
               type="submit"
               onClick={handleRipple}
               disabled={isLoading}
-              className="w-full relative py-3 bg-brand-primary hover:bg-blue-700 text-white rounded-brand font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 flex items-center justify-center shadow-sm active:translate-y-[1px] disabled:opacity-75 disabled:pointer-events-none ripple-btn"
+              className="w-full relative py-3 bg-brand-primary hover:bg-brand-primary-dark text-white rounded-brand font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 flex items-center justify-center shadow-sm active:translate-y-[1px] disabled:opacity-75 disabled:pointer-events-none ripple-btn"
             >
               {/* Ripple Effect Spans */}
               {ripples.map((ripple) => (
