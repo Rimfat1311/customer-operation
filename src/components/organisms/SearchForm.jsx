@@ -46,7 +46,7 @@ export default function SearchForm({ soldToId, onSoldToIdChange, isLoading, onSu
             </LoadingButton>
           </div>
           <p className="text-[10px] text-slate-400 mt-2.5 font-light">
-            Try searching "470011", "123456", or "789012" to see mock customer details.
+            Enter the customer's SAP Sold-To ID to retrieve their account details.
           </p>
         </div>
       </form>

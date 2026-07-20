@@ -11,7 +11,7 @@ const USER_KEY = "app_user";
 /**
  * Axios instance pre-configured with base URL and required metadata headers.
  */
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
