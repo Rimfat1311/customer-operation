@@ -15,4 +15,17 @@ export const ENDPOINTS = {
   CUSTOMERS: {
     GET_DETAILED: (sapSoldTo) => `/customers/detailed/${sapSoldTo}`,
   },
+
+  NOTIFICATIONS: {
+    GET_ALL: '/notification/all',
+    CLEAR_ALL: '/notification/all/clear',
+    GET_FILTERED: '/notification/all/filtered',
+    MARK_ALL_READ: '/notification/all/mark-as-read',
+    BROADCAST: '/notification/broadcast',
+    BROADCAST_BASE64: '/notification/broadcast/base64',
+    BROADCAST_MEDIA: '/notification/broadcast/media',
+    CLEAR: '/notification/clear',
+    MARK_AS_READ: '/notification/mark-as-read',
+    PUSH_TOKEN: '/notification/push-token',
+  },
 };

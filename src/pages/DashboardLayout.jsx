@@ -160,7 +160,7 @@ export default function DashboardLayout() {
             </li>
             <li>
               <NavLink 
-                to="/dashboard/notifications" 
+                to="/dashboard/compose-notification" 
                 className={({ isActive }) => 
                   `flex items-center justify-between px-3 py-2.5 rounded-brand transition-all group ${
                     isActive 
@@ -265,7 +265,7 @@ export default function DashboardLayout() {
                     <button 
                       onClick={() => {
                         setIsNotifDropdownOpen(false);
-                        navigate('/dashboard/notifications');
+                        navigate('/dashboard/compose-notification');
                       }}
                       className="text-xs text-slate-500 hover:text-slate-800 font-medium"
                     >

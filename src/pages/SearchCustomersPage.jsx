@@ -25,6 +25,7 @@ export default function SearchCustomersPage() {
 
     try {
       const result = await customerService.getCustomerDetails(trimmed);
+      console.log('Customer API response:', result);
       setCustomer(result || null);
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');

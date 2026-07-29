@@ -14,8 +14,10 @@ export default function ResetPasswordPage() {
   const handleRipple = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
-    const x = e.clientX - rect.left - size / 2;
-    const y = e.clientY - rect.top - size / 2;
+    const clientX = e.clientX || (rect.left + rect.width / 2);
+    const clientY = e.clientY || (rect.top + rect.height / 2);
+    const x = clientX - rect.left - size / 2;
+    const y = clientY - rect.top - size / 2;
 
     const newRipple = {
       id: Date.now(),

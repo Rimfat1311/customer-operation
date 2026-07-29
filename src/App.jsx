@@ -7,7 +7,6 @@ import DashboardLayout from './pages/DashboardLayout';
 import SearchCustomersPage from './pages/SearchCustomersPage';
 import TakeQuestionsPage from './pages/TakeQuestionsPage';
 import QuizResultsPage from './pages/QuizResultsPage';
-import NotificationsPage from './pages/NotificationsPage';
 import ComposeNotificationPage from './pages/ComposeNotificationPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -32,7 +31,6 @@ function App() {
           <Route path="search-customers" element={<SearchCustomersPage />} />
           <Route path="take-questions" element={<TakeQuestionsPage />} />
           <Route path="quiz-results" element={<QuizResultsPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
           <Route path="compose-notification" element={<ComposeNotificationPage />} />
         </Route>
         
