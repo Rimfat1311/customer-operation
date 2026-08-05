@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
-  User, Phone, MapPin, Building, ShieldAlert, AlertTriangle,
-  Hash, Globe, Shield, UserCheck, Briefcase
+  Phone, MapPin, Building, ShieldAlert, AlertTriangle,
+  Hash, Globe, UserCheck, Briefcase
 } from 'lucide-react';
 import SearchForm from '../components/organisms/SearchForm';
 import { customerService } from '../services/customerService';
