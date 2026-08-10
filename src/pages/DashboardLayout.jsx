@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { 
   Search, Bell, ChevronDown, MessageSquare, CheckSquare, 
-  Settings, LogOut, Menu, User 
+  Settings, LogOut, Menu, User, Upload, UserCheck, HelpCircle, FileText, Megaphone
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/features/auth';
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -27,10 +27,12 @@ export default function DashboardLayout() {
 
   // Load user data from the live authenticated session
   const { user: rawUser, logout: contextLogout } = useAuth();
+  const isSupervisor = rawUser?.role === 'CRM_SUPERVISOR' || rawUser?.role === 'ADMIN';
+
   const currentUser = {
     name: rawUser?.profile ? `${rawUser.profile.firstName} ${rawUser.profile.lastName}` : 'Unknown User',
     email: rawUser?.username || 'user@example.com',
-    role: rawUser?.role || 'Agent',
+    role: isSupervisor ? 'Supervisor' : 'Agent',
     firstName: rawUser?.profile ? rawUser.profile.firstName : 'User',
   };
   const userInitials = currentUser.name !== 'Unknown User' ? currentUser.name.charAt(0).toUpperCase() : 'U';
@@ -111,81 +113,188 @@ export default function DashboardLayout() {
           </div>
         </div>
         
-        <nav className="p-4 space-y-2 flex-1">
+        <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
           <ul className="space-y-1">
-            <li>
-              <NavLink 
-                to="/dashboard/take-questions" 
-                className={({ isActive }) => 
-                  `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
-                    isActive 
-                      ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
-                  }`
-                }
-              >
-                <MessageSquare className="w-5 h-5 flex-shrink-0" />
-                {isSidebarOpen && <span>Take Questions</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/dashboard/quiz-results" 
-                className={({ isActive }) => 
-                  `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
-                    isActive 
-                      ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
-                  }`
-                }
-              >
-                <CheckSquare className="w-5 h-5 flex-shrink-0" />
-                {isSidebarOpen && <span>My Quiz Results</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/dashboard/search-customers" 
-                className={({ isActive }) => 
-                  `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
-                    isActive 
-                      ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
-                  }`
-                }
-              >
-                <Search className="w-5 h-5 flex-shrink-0" />
-                {isSidebarOpen && <span>Search Customers</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/dashboard/compose-notification" 
-                className={({ isActive }) => 
-                  `flex items-center justify-between px-3 py-2.5 rounded-brand transition-all group ${
-                    isActive 
-                      ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
-                  }`
-                }
-              >
-                <div className="flex items-center space-x-3 min-w-0">
-                  <Bell className="w-5 h-5 flex-shrink-0" />
-                  {isSidebarOpen && <span className="truncate">Notifications</span>}
-                </div>
-                {isSidebarOpen && unreadNotifCount > 0 && (
-                  <span className="bg-brand-primary-light text-brand-primary text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0">
-                    {unreadNotifCount}
-                  </span>
-                )}
-              </NavLink>
-            </li>
+            {isSupervisor ? (
+              <>
+                <li>
+                  <NavLink 
+                    to="/dashboard/admin/upload-customers" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <Upload className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Upload Customers</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/admin/update-drivers" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <UserCheck className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Update Drivers</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/admin/set-questions" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <HelpCircle className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Set Questions</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/admin/manage-questions" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <FileText className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Manage Questions</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/quiz-results" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <CheckSquare className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>My Quiz Results</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/search-customers" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <Search className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Search Customers</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/compose-notification" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <Megaphone className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Compose Notif</span>}
+                  </NavLink>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <NavLink 
+                    to="/dashboard/take-questions" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <MessageSquare className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Take Questions</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/quiz-results" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <CheckSquare className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>My Quiz Results</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/search-customers" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <Search className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Search Customers</span>}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard/compose-notification" 
+                    className={({ isActive }) => 
+                      `flex items-center space-x-3 px-3 py-2.5 rounded-brand transition-all ${
+                        isActive 
+                          ? 'bg-brand-primary-light text-brand-primary font-semibold shadow-sm' 
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 font-medium'
+                      }`
+                    }
+                  >
+                    <Megaphone className="w-5 h-5 flex-shrink-0" />
+                    {isSidebarOpen && <span>Compose Notif</span>}
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </nav>
 
         {/* Sidebar Footer matching screenshot */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-          <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">Logged In As</span>
+          <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">
+            Logged In As ({currentUser.role})
+          </span>
           <span className="block text-xs sm:text-sm font-semibold text-slate-700 mt-1.5 truncate">{currentUser.name}</span>
         </div>
 

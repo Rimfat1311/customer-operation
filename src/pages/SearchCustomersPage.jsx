@@ -3,8 +3,8 @@ import {
   Phone, MapPin, Building, ShieldAlert, AlertTriangle,
   Hash, Globe, UserCheck, Briefcase
 } from 'lucide-react';
-import SearchForm from '../components/organisms/SearchForm';
-import { customerService } from '../services/customerService';
+import SearchForm from '@/components/ui/SearchForm';
+import { customerService } from '@/features/customers';
 
 export default function SearchCustomersPage() {
   const [soldToId, setSoldToId] = useState('');
