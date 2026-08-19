@@ -44,6 +44,12 @@ export const ENDPOINTS = {
     MY_ATTEMPTS:      (quizId) => `/v1/quizzes/${quizId}/my-attempts`,
     LEADERBOARD:      (quizId) => `/v1/quizzes/${quizId}/leaderboard`,
     PUBLISH_QUIZ:     (quizId) => `/v1/quizzes/${quizId}/publish`,
+    ADD_QUESTION:     (quizId) => `/v1/quizzes/${quizId}/questions`,
+    UPDATE_QUESTION:  (quizId, questionId) => `/v1/quizzes/${quizId}/questions/${questionId}`,
+    DELETE_QUESTION:  (quizId, questionId) => `/v1/quizzes/${quizId}/questions/${questionId}`,
+    GET_CREATOR_RESULTS: (quizId) => `/v1/quizzes/${quizId}/results`,
+    REPORT_ATTEMPTS:  (quizId) => `/v1/quizzes/${quizId}/reports/attempts`,
+    REPORT_SUMMARY:   (quizId) => `/v1/quizzes/${quizId}/reports/summary`,
     // Legacy fallbacks
     QUESTIONS:        '/quiz/questions',
     SUBMIT_QUIZ:      '/quiz/submit',

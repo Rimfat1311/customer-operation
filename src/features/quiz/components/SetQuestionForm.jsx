@@ -75,13 +75,16 @@ export default function SetQuestionForm({ onQuestionCreated }) {
 
     setSaving(true);
     try {
+      const rawScore = Number(passingScore) || 70;
+      const scoreRatio = rawScore > 1 ? rawScore / 100 : rawScore;
+
       const payload = {
         title: quizTitle.trim(),
         description: description.trim(),
         instructions: instructions.trim(),
         randomizeQuestions,
         randomizeOptions,
-        passingScorePercentage: Number(passingScore),
+        passingScorePercentage: scoreRatio,
         questions: questionsList.map(q => ({
           questionText: q.questionText,
           options: q.options.map((optText, idx) => ({

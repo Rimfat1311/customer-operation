@@ -6,58 +6,7 @@ import { quizService } from '../services/quizService';
 
 const QUIZ_LIST_KEY = 'app_created_quizzes_list';
 
-const DEFAULT_QUIZZES = [
-  {
-    id: 1,
-    title: 'monthly safety training',
-    description: 'to train new members',
-    passingScorePercentage: 80,
-    published: true,
-    active: true,
-    questions: [
-      {
-        id: 101,
-        questionText: 'What is the required safety gear when operating depot transport?',
-        options: [
-          { optionText: 'Standard Uniform & Helmet', correct: false },
-          { optionText: 'High-Visibility Vest & Safety Boots', correct: true },
-          { optionText: 'Casual Attire', correct: false },
-          { optionText: 'No specific requirements', correct: false },
-        ]
-      },
-      {
-        id: 102,
-        questionText: 'How often should vehicle pre-inspection checks be logged?',
-        options: [
-          { optionText: 'Weekly', correct: false },
-          { optionText: 'Monthly', correct: false },
-          { optionText: 'Before every trip shift', correct: true },
-          { optionText: 'Only after maintenance', correct: false },
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Driver Safety & Compliance Quiz',
-    description: 'Quarterly safety refresher assessment for all drivers.',
-    passingScorePercentage: 75,
-    published: false,
-    active: false,
-    questions: [
-      {
-        id: 201,
-        questionText: 'What is the maximum allowed continuous driving hours without a mandatory rest break?',
-        options: [
-          { optionText: '2 Hours', correct: false },
-          { optionText: '4 Hours', correct: true },
-          { optionText: '6 Hours', correct: false },
-          { optionText: '8 Hours', correct: false },
-        ]
-      }
-    ]
-  }
-];
+const DEFAULT_QUIZZES = [];
 
 export function saveQuizToStorage(quizObj) {
   const existing = getQuizzesFromStorage();
@@ -67,15 +16,11 @@ export function saveQuizToStorage(quizObj) {
 
 export function getQuizzesFromStorage() {
   const stored = localStorage.getItem(QUIZ_LIST_KEY);
-  if (!stored) {
-    localStorage.setItem(QUIZ_LIST_KEY, JSON.stringify(DEFAULT_QUIZZES));
-    return DEFAULT_QUIZZES;
-  }
+  if (!stored) return [];
   try {
-    const list = JSON.parse(stored);
-    return list.length > 0 ? list : DEFAULT_QUIZZES;
+    return JSON.parse(stored) || [];
   } catch {
-    return DEFAULT_QUIZZES;
+    return [];
   }
 }
 
@@ -120,33 +65,22 @@ export default function ManageQuestionsTable() {
     setLoading(true);
     setError(null);
     try {
-      let list = [];
-      try {
-        const response = await quizService.getMyQuizzes();
-        const raw = response.data;
-        list = Array.isArray(raw) 
-          ? raw 
-          : raw?.data && Array.isArray(raw.data) 
-            ? raw.data 
-            : raw?.content && Array.isArray(raw.content)
-              ? raw.content
-              : [];
-      } catch {
-        // Fall back to storage
-      }
+      const response = await quizService.getMyQuizzes();
+      const raw = response.data || response;
+      const list = Array.isArray(raw) 
+        ? raw 
+        : raw?.data && Array.isArray(raw.data) 
+          ? raw.data 
+          : raw?.content && Array.isArray(raw.content)
+            ? raw.content
+            : [];
 
-      if (list.length > 0) {
-        setQuizzes(list);
-        return;
-      }
-
-      // Load from local storage (or defaults)
-      const storedList = getQuizzesFromStorage();
-      setQuizzes(storedList);
+      setQuizzes(list);
     } catch (err) {
       const msg = err?.response?.data?.message || err.message || 'Failed to load quizzes.';
       setError(msg);
       showToast(msg, 'error', 'Load Error');
+      setQuizzes([]);
     } finally {
       setLoading(false);
     }
@@ -167,7 +101,6 @@ export default function ManageQuestionsTable() {
     } finally {
       const updatedList = quizzes.map(q => q.id === quiz.id ? { ...q, published: nextState, active: nextState } : q);
       setQuizzes(updatedList);
-      localStorage.setItem(QUIZ_LIST_KEY, JSON.stringify(updatedList));
       showToast(`Quiz status changed to ${nextState ? 'Published' : 'Draft'}.`, 'success', 'Status Updated');
       setPublishingId(null);
     }
@@ -215,15 +148,11 @@ export default function ManageQuestionsTable() {
     setLoadingLeaderboard(true);
     try {
       const res = await quizService.getLeaderboard(quiz.id);
-      const raw = res.data;
+      const raw = res.data || res;
       const list = Array.isArray(raw) ? raw : raw?.data ? (Array.isArray(raw.data) ? raw.data : []) : [];
       setLeaderboardData(list);
     } catch {
-      setLeaderboardData([
-        { userId: 101, name: 'Timman Simon', score: 95 },
-        { userId: 102, name: 'Alex Johnson', score: 88 },
-        { userId: 103, name: 'Sarah Connor', score: 82 },
-      ]);
+      setLeaderboardData([]);
     } finally {
       setLoadingLeaderboard(false);
     }
@@ -245,6 +174,17 @@ export default function ManageQuestionsTable() {
     setAssigning(true);
     try {
       const staffIds = staffIdsInput.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
+      
+      // IMPORTANT: Update local storage copy for offline fallback compatibility
+      const updatedQuizzes = quizzes.map(q => {
+        if (q.id === selectedQuiz.id) {
+          return { ...q, participantStaffProfileIds: staffIds };
+        }
+        return q;
+      });
+      setQuizzes(updatedQuizzes);
+      saveQuizToStorage(updatedQuizzes.find(q => q.id === selectedQuiz.id));
+
       await quizService.assignQuiz(selectedQuiz.id, staffIds);
       showToast(`Assigned ${staffIds.length} staff member(s) to quiz.`, 'success', 'Assigned');
       setActiveModal(null);
@@ -260,10 +200,12 @@ export default function ManageQuestionsTable() {
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     setSavingEdit(true);
+    const rawScore = Number(editPassingScore) || 70;
+    const scoreRatio = rawScore > 1 ? rawScore / 100 : rawScore;
     const payload = {
       title: editTitle.trim(),
       description: editDescription.trim(),
-      passingScorePercentage: Number(editPassingScore),
+      passingScorePercentage: scoreRatio,
     };
     try {
       await quizService.updateQuiz(selectedQuiz.id, payload);
@@ -327,6 +269,17 @@ export default function ManageQuestionsTable() {
           >
             Retry
           </button>
+        </div>
+      ) : quizzes.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-slate-100 p-12 flex flex-col items-center justify-center space-y-3">
+          <HelpCircle className="w-8 h-8 text-slate-300" />
+          <p className="text-sm font-medium text-slate-500">No quizzes created yet.</p>
+          <Link
+            to="/dashboard/admin/set-questions"
+            className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-xl hover:bg-brand-primary-dark transition-colors"
+          >
+            Create New Quiz
+          </Link>
         </div>
       ) : (
         /* List of Quiz Cards - Matching Screenshot Design */

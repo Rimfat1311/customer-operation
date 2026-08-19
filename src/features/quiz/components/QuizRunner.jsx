@@ -4,8 +4,11 @@ import Badge from '@/components/ui/Badge';
 import Toast from '@/components/ui/Toast';
 import { quizService } from '../services/quizService';
 import { saveResultToStorage } from './QuizResultsTable';
+import { useAuth } from '@/features/auth';
 
 export default function QuizRunner() {
+  const { user } = useAuth();
+  
   // Quiz data state
   const [quiz, setQuiz] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -34,65 +37,38 @@ export default function QuizRunner() {
       let quizMeta = null;
       let questionsList = [];
 
-      // 1. Try v1 assigned quizzes first (GET /v1/quizzes/assigned)
-      try {
-        const assignedRes = await quizService.getAssignedQuizzes();
-        const assignedData = assignedRes.data;
-        const assignedList = Array.isArray(assignedData)
-          ? assignedData
-          : assignedData?.data && Array.isArray(assignedData.data)
-            ? assignedData.data
-            : [];
+      // 1. Fetch assigned quizzes for the participant (GET /v1/quizzes/assigned)
+      const assignedRes = await quizService.getAssignedQuizzes();
+      const assignedData = assignedRes.data || assignedRes;
+      const assignedList = Array.isArray(assignedData)
+        ? assignedData
+        : assignedData?.data && Array.isArray(assignedData.data)
+          ? assignedData.data
+          : [];
 
-        if (assignedList.length > 0) {
-          const selectedQuiz = assignedList[0];
-          quizMeta = selectedQuiz;
+      if (assignedList.length > 0) {
+        const selectedQuiz = assignedList[0];
+        quizMeta = selectedQuiz;
 
-          // Start attempt to get questions (POST /v1/quizzes/{quizId}/attempts)
-          try {
-            const attemptRes = await quizService.startAttempt(selectedQuiz.id);
-            const attemptData = attemptRes.data?.data || attemptRes.data;
-            if (attemptData?.id) {
-              setAttemptId(attemptData.id);
-            }
-            questionsList = attemptData?.questions || selectedQuiz.questions || [];
-          } catch {
-            questionsList = selectedQuiz.questions || [];
+        // Start attempt to get questions (POST /v1/quizzes/{quizId}/attempts)
+        try {
+          const attemptRes = await quizService.startAttempt(selectedQuiz.id);
+          const attemptData = attemptRes.data?.data || attemptRes.data || attemptRes;
+          if (attemptData?.id) {
+            setAttemptId(attemptData.id);
           }
-        }
-      } catch {
-        // Fall back to legacy getQuestions
-      }
-
-      // 2. Fallback to legacy GET /quiz/questions if no v1 questions found
-      if (questionsList.length === 0) {
-        const response = await quizService.getQuestions();
-        const raw = response.data;
-
-        if (Array.isArray(raw)) {
-          questionsList = raw;
-        } else if (raw?.data) {
-          if (Array.isArray(raw.data)) {
-            questionsList = raw.data;
-          } else if (raw.data?.questions) {
-            quizMeta = raw.data;
-            questionsList = raw.data.questions || [];
-          } else if (Array.isArray(raw.data?.content)) {
-            questionsList = raw.data.content;
-          }
-        } else if (raw?.questions) {
-          quizMeta = raw;
-          questionsList = raw.questions;
-        } else if (raw?.content) {
-          questionsList = raw.content;
+          questionsList = attemptData?.questions || selectedQuiz.questions || [];
+        } catch {
+          questionsList = selectedQuiz.questions || [];
         }
       }
 
       setQuiz(quizMeta);
       setQuestions(questionsList);
     } catch (err) {
-      const msg = err?.response?.data?.message || err.message || 'Failed to load quiz questions.';
+      const msg = err?.response?.data?.message || err.message || 'Failed to load assigned quizzes.';
       setError(msg);
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
@@ -199,7 +175,10 @@ export default function QuizRunner() {
         return acc;
       }, 0) / questions.length) * 100);
 
-      const isPassed = serverPassed ?? (finalCalculatedScore >= (quiz?.passingScorePercentage || 70));
+      const rawPassingThreshold = quiz?.passingScorePercentage ?? 70;
+      const passingThresholdPercentage = rawPassingThreshold <= 1 ? rawPassingThreshold * 100 : rawPassingThreshold;
+
+      const isPassed = serverPassed ?? (finalCalculatedScore >= passingThresholdPercentage);
 
       setScore(finalCalculatedScore);
       setPassed(isPassed);

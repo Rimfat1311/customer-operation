@@ -123,7 +123,7 @@ export default function LoginPage() {
               <path d="M8 16L13 21L24 10" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="font-bold text-xl tracking-tight">LAP Contact Center</span>
+          <span className="font-bold text-xl tracking-tight">HBM Contact Center</span>
         </div>
 
         {/* Core Welcoming Messages */}

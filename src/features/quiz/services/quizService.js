@@ -94,6 +94,69 @@ export const quizService = {
   },
 
   /**
+   * Remove a participant assignment
+   */
+  async removeAssignment(quizId, assignmentId) {
+    return await apiClient.delete(ENDPOINTS.QUIZ.REMOVE_ASSIGNMENT(quizId, assignmentId));
+  },
+
+  /**
+   * Get current state of an attempt
+   */
+  async getAttempt(quizId, attemptId) {
+    return await apiClient.get(ENDPOINTS.QUIZ.GET_ATTEMPT(quizId, attemptId));
+  },
+
+  /**
+   * Get full attempt history for participant
+   */
+  async getMyAttempts(quizId) {
+    return await apiClient.get(ENDPOINTS.QUIZ.MY_ATTEMPTS(quizId));
+  },
+
+  /**
+   * Add a question to an existing quiz
+   */
+  async addQuestion(quizId, questionData) {
+    return await apiClient.post(ENDPOINTS.QUIZ.ADD_QUESTION(quizId), questionData);
+  },
+
+  /**
+   * Update a question in a quiz
+   */
+  async updateQuestion(quizId, questionId, questionData) {
+    return await apiClient.put(ENDPOINTS.QUIZ.UPDATE_QUESTION(quizId, questionId), questionData);
+  },
+
+  /**
+   * Delete a question from a quiz
+   */
+  async deleteQuestion(quizId, questionId) {
+    return await apiClient.delete(ENDPOINTS.QUIZ.DELETE_QUESTION(quizId, questionId));
+  },
+
+  /**
+   * Get creator-facing participant result summary
+   */
+  async getCreatorQuizResults(quizId) {
+    return await apiClient.get(ENDPOINTS.QUIZ.GET_CREATOR_RESULTS(quizId));
+  },
+
+  /**
+   * Get attempt-level report
+   */
+  async getAttemptReport(quizId, params = {}) {
+    return await apiClient.get(ENDPOINTS.QUIZ.REPORT_ATTEMPTS(quizId), { params });
+  },
+
+  /**
+   * Get summary report metrics for a quiz
+   */
+  async getSummaryReport(quizId) {
+    return await apiClient.get(ENDPOINTS.QUIZ.REPORT_SUMMARY(quizId));
+  },
+
+  /**
    * Legacy / general submit fallback
    */
   async submitQuiz(submissionData) {

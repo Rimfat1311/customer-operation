@@ -1,17 +1,16 @@
 import React from 'react';
-import { User, Mail, Phone, MapPin, Building, ShieldAlert, CheckCircle } from 'lucide-react';
+import { Phone, MapPin, Building, Globe, Hash, UserCheck, Briefcase, Mail } from 'lucide-react';
 import Badge from './Badge';
-import CustomerInfoRow from './CustomerInfoRow';
 
 /**
- * Full customer result card with header, badges, contact info, and financial details.
- * @param {object} customer - Customer data object
+ * Customer detail card for live SAP Sold-To accounts.
+ * @param {object} customer - Real SAP Customer payload from GET /customers/detailed/{sapSoldTo}
  */
 export default function CustomerDetailCard({ customer }) {
-  const isActive = customer.status.includes('Active');
+  if (!customer) return null;
 
   return (
-    <div className="bg-white border border-slate-100 rounded-brand shadow-sm overflow-hidden">
+    <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden animate-slide-up">
       {/* Card Header */}
       <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-100 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
         <div className="flex items-center space-x-3">
@@ -19,60 +18,96 @@ export default function CustomerDetailCard({ customer }) {
             <Building className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-800 text-base">{customer.name}</h3>
-            <span className="text-xs text-slate-400 font-light">Sold-To Account: #{customer.id}</span>
+            <h3 className="font-bold text-slate-800 text-base">{customer.customerName || customer.name || '—'}</h3>
+            <span className="text-xs text-slate-400 font-light">
+              SAP Sold-To: #{customer.sapSoldTo || customer.id}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="primary">{customer.tier}</Badge>
-          <Badge 
-            variant={isActive ? 'success' : 'danger'}
-            icon={isActive ? <CheckCircle className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
-          >
-            {customer.status}
-          </Badge>
+          {customer.zone && (
+            <Badge variant="primary">
+              {customer.zone}
+            </Badge>
+          )}
+          {customer.salesArea && (
+            <Badge variant="slate">
+              {customer.salesArea}
+            </Badge>
+          )}
         </div>
       </div>
 
       {/* Card Body */}
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Contact Information */}
+        {/* Contact & Location */}
         <div className="space-y-4">
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Contact Information</h4>
+          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Contact & Location</h4>
           <div className="space-y-3">
-            <CustomerInfoRow icon={<User className="w-4 h-4" />}>
-              <strong>Key Contact:</strong> {customer.contactPerson}
-            </CustomerInfoRow>
-            <CustomerInfoRow icon={<Mail className="w-4 h-4" />}>
-              <a href={`mailto:${customer.email}`} className="text-brand-primary hover:underline">{customer.email}</a>
-            </CustomerInfoRow>
-            <CustomerInfoRow icon={<Phone className="w-4 h-4" />}>
-              {customer.phone}
-            </CustomerInfoRow>
-            <CustomerInfoRow icon={<MapPin className="w-4 h-4" />}>
-              {customer.address}
-            </CustomerInfoRow>
+            {customer.phoneNumber && (
+              <div className="flex items-start space-x-3 text-xs sm:text-sm text-slate-600">
+                <Phone className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <span><strong>Phone:</strong> {customer.phoneNumber}</span>
+              </div>
+            )}
+            {customer.email && (
+              <div className="flex items-start space-x-3 text-xs sm:text-sm text-slate-600">
+                <Mail className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <a href={`mailto:${customer.email}`} className="text-brand-primary hover:underline">{customer.email}</a>
+              </div>
+            )}
+            {customer.address && (
+              <div className="flex items-start space-x-3 text-xs sm:text-sm text-slate-600">
+                <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <span>{customer.address}</span>
+              </div>
+            )}
+            {customer.geoState && (
+              <div className="flex items-start space-x-3 text-xs sm:text-sm text-slate-600">
+                <Globe className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <span><strong>State:</strong> {customer.geoState}</span>
+              </div>
+            )}
+            {customer.zone && (
+              <div className="flex items-start space-x-3 text-xs sm:text-sm text-slate-600">
+                <Hash className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <span><strong>Zone:</strong> {customer.zone}</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Financial Status */}
+        {/* Account Managers */}
         <div className="space-y-4">
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Financial Status</h4>
-          <div className="bg-slate-50 rounded-brand p-4 space-y-3.5 border border-slate-100">
-            <div className="flex justify-between items-center text-xs sm:text-sm">
-              <span className="text-slate-500 font-medium">Credit Limit:</span>
-              <span className="font-semibold text-slate-800">{customer.creditLimit}</span>
-            </div>
-            <div className="flex justify-between items-center text-xs sm:text-sm">
-              <span className="text-slate-500 font-medium">Outstanding Balance:</span>
-              <span className={`font-semibold ${customer.outstandingBalance !== '$0' ? 'text-rose-600' : 'text-slate-800'}`}>
-                {customer.outstandingBalance}
-              </span>
-            </div>
-            <div className="pt-2 border-t border-slate-200/60 flex justify-between items-center text-xs">
-              <span className="text-slate-400">Payment Terms:</span>
-              <span className="text-slate-600 font-medium">Net 30 Days</span>
-            </div>
+          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Account Managers</h4>
+          <div className="bg-slate-50 rounded-xl p-4 space-y-3.5 border border-slate-100">
+            {customer.tsmName && (
+              <div className="flex justify-between items-center text-xs sm:text-sm">
+                <span className="text-slate-500 font-medium flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-slate-400" /> TSM
+                </span>
+                <span className="font-semibold text-slate-800">{customer.tsmName}</span>
+              </div>
+            )}
+            {customer.zsmName && (
+              <div className="flex justify-between items-center text-xs sm:text-sm">
+                <span className="text-slate-500 font-medium flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-slate-400" /> ZSM
+                </span>
+                <span className="font-semibold text-slate-800">{customer.zsmName}</span>
+              </div>
+            )}
+            {customer.hosName && (
+              <div className="flex justify-between items-center text-xs sm:text-sm">
+                <span className="text-slate-500 font-medium flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-slate-400" /> HOS
+                </span>
+                <span className="font-semibold text-slate-800">{customer.hosName}</span>
+              </div>
+            )}
+            {!customer.tsmName && !customer.zsmName && !customer.hosName && (
+              <p className="text-xs text-slate-400 italic">No manager data available.</p>
+            )}
           </div>
         </div>
       </div>

@@ -41,24 +41,24 @@ function App() {
             
             {/* Main Routes */}
             <Route path="search-customers" element={
-              <ProtectedRoute allowedRoles={['AGENT', 'ADMIN', 'CRM_SUPERVISOR']}>
+              <ProtectedRoute allowedRoles={['CUSTOMER_CENTER', 'ADMIN', 'CRM_SUPERVISOR']}>
                 <SearchCustomersPage />
               </ProtectedRoute>
             } />
             <Route path="quiz-results" element={
-              <ProtectedRoute allowedRoles={['AGENT', 'ADMIN', 'CRM_SUPERVISOR']}>
+              <ProtectedRoute allowedRoles={['CUSTOMER_CENTER', 'ADMIN', 'CRM_SUPERVISOR']}>
                 <QuizResultsPage />
               </ProtectedRoute>
             } />
             <Route path="compose-notification" element={
-              <ProtectedRoute allowedRoles={['AGENT', 'ADMIN', 'CRM_SUPERVISOR']}>
+              <ProtectedRoute allowedRoles={['CUSTOMER_CENTER', 'ADMIN', 'CRM_SUPERVISOR']}>
                 <ComposeNotificationPage />
               </ProtectedRoute>
             } />
             
             {/* Agent Route */}
             <Route path="take-questions" element={
-              <ProtectedRoute allowedRoles={['AGENT', 'ADMIN', 'CRM_SUPERVISOR']}>
+              <ProtectedRoute allowedRoles={['CUSTOMER_CENTER', 'ADMIN', 'CRM_SUPERVISOR']}>
                 <TakeQuestionsPage />
               </ProtectedRoute>
             } />

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import {
   Bell, Send, ChevronDown, Upload, X, FileText, ImageIcon,
   Video, Megaphone, Users, MapPin, Sparkles,
-  Package, Truck, LogOut, File, Headphones, Paperclip, Loader2, CheckCircle2
+  Package, Truck, LogOut, File as FileIcon, Headphones, Paperclip, Loader2, CheckCircle2
 } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
 import Toast from '@/components/ui/Toast';
@@ -23,7 +23,7 @@ const MEDIA_TYPES = [
   { value: 'text', label: 'Text', icon: FileText },
   { value: 'image', label: 'Image', icon: ImageIcon },
   { value: 'video', label: 'Video', icon: Video },
-  { value: 'document', label: 'Document', icon: File },
+  { value: 'document', label: 'Document', icon: FileIcon },
   { value: 'audio', label: 'Audio', icon: Headphones },
   { value: 'other', label: 'Other', icon: Paperclip },
 ];
@@ -173,7 +173,7 @@ export default function ComposeNotificationCard() {
 
           canvas.toBlob((blob) => {
             if (blob) {
-              const compressedFile = new File([blob], file.name, {
+              const compressedFile = new window.File([blob], file.name, {
                 type: 'image/jpeg',
                 lastModified: Date.now(),
               });
@@ -262,8 +262,6 @@ export default function ComposeNotificationCard() {
         }
       }
 
-      setSending(false);
-      setUploadProgress(0);
       setJustSent(true);
 
       showNotificationToast(
@@ -280,14 +278,15 @@ export default function ComposeNotificationCard() {
       setTimeout(() => setJustSent(false), 2000);
     } catch (error) {
       console.error('Failed to send notification:', error);
-      setSending(false);
-      setUploadProgress(0);
       setJustSent(false);
       showNotificationToast(
         error.message || 'Failed to send notification broadcast. Please try again.',
         'error',
         'Delivery Failed'
       );
+    } finally {
+      setSending(false);
+      setUploadProgress(0);
     }
   };
 
@@ -469,7 +468,7 @@ export default function ComposeNotificationCard() {
                       <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center flex-shrink-0">
                         {mediaType === 'image' && <ImageIcon className="w-5 h-5 text-brand-primary" />}
                         {mediaType === 'video' && <Video className="w-5 h-5 text-brand-primary" />}
-                        {mediaType === 'document' && <File className="w-5 h-5 text-brand-primary" />}
+                        {mediaType === 'document' && <FileIcon className="w-5 h-5 text-brand-primary" />}
                         {mediaType === 'audio' && <Headphones className="w-5 h-5 text-brand-primary" />}
                         {mediaType === 'other' && <Paperclip className="w-5 h-5 text-brand-primary" />}
                       </div>

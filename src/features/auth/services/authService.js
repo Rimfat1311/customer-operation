@@ -194,10 +194,30 @@ export const authService = {
     return await apiClient.post('/auth/forget_password', { email });
   },
 
+  /**
+   * Resend password reset token link
+   */
+  async resendPasswordReset(email) {
+    return await authService.requestPasswordReset(email);
+  },
+
+  /**
+   * Social OAuth login fallback handler
+   */
+  async socialLogin(provider) {
+    throw new Error(`${provider} OAuth login is not enabled on this environment.`);
+  },
+
   _persistSession(result) {
-    if (result?.token) localStorage.setItem(AUTH_TOKEN_KEY, result.token);
-    if (result?.refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, result.refreshToken);
-    if (result?.user) localStorage.setItem(USER_KEY, JSON.stringify(result.user));
+    if (!result) return;
+    const payload = result.result || result.data || result;
+    const token = payload.token || result.token;
+    const refreshToken = payload.refreshToken || result.refreshToken;
+    const user = payload.user || (payload.id ? payload : null);
+
+    if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
+    if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
   },
 
   getToken() { return localStorage.getItem(AUTH_TOKEN_KEY); },

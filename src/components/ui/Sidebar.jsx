@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   MessageSquare, CheckSquare, Search, Bell,
-  Upload, UserCheck, HelpCircle, FileText 
+  Upload, UserCheck, HelpCircle, FileText, X 
 } from 'lucide-react';
 import NavItem from './NavItem';
 import { useAuth } from '@/features/auth';
@@ -10,17 +10,21 @@ import { useAuth } from '@/features/auth';
  * Dynamic Sidebar with role-based navigation links.
  * Supervisors (CRM_SUPERVISOR / ADMIN) vs Agents.
  */
-export default function Sidebar({ isSidebarOpen, unreadNotifCount }) {
+export default function Sidebar({ isSidebarOpen, unreadNotifCount, onClose }) {
   const { user } = useAuth();
   const isSupervisor = user?.role === 'CRM_SUPERVISOR' || user?.role === 'ADMIN';
 
   return (
-    <aside className={`fixed inset-y-0 left-0 z-50 ${
-      isSidebarOpen ? 'w-64' : 'w-20'
-    } bg-white border-r border-slate-100 flex flex-col justify-between transition-all duration-300 ease-in-out hidden sm:flex`}>
+    <aside className={`fixed inset-y-0 left-0 z-50 bg-white border-r border-slate-100 flex flex-col justify-between transition-all duration-300 ease-in-out ${
+      isSidebarOpen 
+        ? 'w-64 translate-x-0' 
+        : 'w-20 -translate-x-full sm:translate-x-0 sm:w-20'
+    }`}>
       
       {/* Header Logo */}
-      <div className={`h-16 border-b border-slate-100 flex items-center ${isSidebarOpen ? 'px-6' : 'justify-center'} transition-all duration-300 flex-shrink-0`}>
+      <div className={`h-16 border-b border-slate-100 flex items-center ${
+        isSidebarOpen ? 'justify-between px-6' : 'justify-center px-0'
+      } transition-all duration-300 flex-shrink-0`}>
         <div className="flex items-center space-x-2.5">
           <div className="w-8 h-8 rounded-brand bg-brand-primary flex items-center justify-center shadow-inner flex-shrink-0">
             <svg viewBox="0 0 32 32" className="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg">
@@ -29,10 +33,19 @@ export default function Sidebar({ isSidebarOpen, unreadNotifCount }) {
           </div>
           {isSidebarOpen && (
             <span className="font-bold text-base text-slate-800 tracking-tight whitespace-nowrap">
-              LAP Contact Center
+              HBM Contact Center
             </span>
           )}
         </div>
+        {isSidebarOpen && onClose && (
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-50 transition-colors sm:hidden"
+            aria-label="Close sidebar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
@@ -57,7 +70,7 @@ export default function Sidebar({ isSidebarOpen, unreadNotifCount }) {
             isSidebarOpen={isSidebarOpen}
           />
           <NavItem
-            to="/dashboard/notifications"
+            to="/dashboard/compose-notification"
             icon={<Bell className="w-5 h-5" />}
             label="Notifications"
             badgeCount={unreadNotifCount}
@@ -99,7 +112,7 @@ export default function Sidebar({ isSidebarOpen, unreadNotifCount }) {
       {/* Sidebar Footer */}
       <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex-shrink-0">
         <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">
-          Role: {isSupervisor ? 'Supervisor' : 'Agent'}
+          Role: {isSupervisor ? 'Supervisor' : 'Customer Center'}
         </span>
         <span className="block text-xs sm:text-sm font-semibold text-slate-700 mt-1.5 truncate">
           {user?.profile ? `${user.profile.firstName} ${user.profile.lastName}` : user?.username || 'User'}

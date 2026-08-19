@@ -22,12 +22,26 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
   }
 
   if (!isAuthenticated) {
-    // Redirect unauthorized traffic to login, saving the original path history
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
-    // Role mismatch: send user to an authorized fallback view
+  // Normalize role string for safe matching
+  const rawRole = String(user?.role || user?.profile?.role || '').trim().toUpperCase();
+  
+  // Standardize call center/agent role names to CUSTOMER_CENTER
+  const userRole = (rawRole === 'AGENT' || rawRole === 'CALL_CENTER' || rawRole === 'CUSTOMER CENTER' || rawRole === 'CUSTOMER_CENTER')
+    ? 'CUSTOMER_CENTER'
+    : rawRole;
+
+  // Normalize allowedRoles array
+  const normalizedAllowedRoles = allowedRoles.map(r => {
+    const upper = String(r).toUpperCase();
+    return (upper === 'AGENT' || upper === 'CALL_CENTER' || upper === 'CUSTOMER CENTER' || upper === 'CUSTOMER_CENTER')
+      ? 'CUSTOMER_CENTER'
+      : upper;
+  });
+
+  if (allowedRoles.length > 0 && !normalizedAllowedRoles.includes(userRole)) {
     return <Navigate to="/dashboard/search-customers" replace />;
   }
 
